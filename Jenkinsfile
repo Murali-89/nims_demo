@@ -1,53 +1,24 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'MAVEN_HOME'
-        jdk 'JAVA_HOME'
-    }
-
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Compile') {
             steps {
-                sh "mvn clean install -DskipTests=false"
+                // Adjust filename if needed
+                sh 'javac HelloWorld.java'
             }
         }
 
-        stage('Run Tests') {
+        stage('Run') {
             steps {
-                sh "mvn test"
+                sh 'java HelloWorld'
             }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
-        }
-
-        stage('Package') {
-            steps {
-                sh "mvn package"
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Build Successful!"
-        }
-        failure {
-            echo "❌ Build Failed!"
         }
     }
 }
